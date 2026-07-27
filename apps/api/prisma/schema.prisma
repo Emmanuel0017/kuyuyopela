@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum AgentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  AIRTEL_MONEY
+  TNM_MPAMBA
+  BANK_TRANSFER
+  VISA_MASTERCARD
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  category    String
+  price       Int
+  stock       Int         @default(0)
+  imageUrl    String?
+  description String?
+  isActive    Boolean     @default(true)
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  customerId    String
+  status        OrderStatus   @default(PENDING)
+  items         OrderItem[]
+  total         Int
+  // delivery info — saved per order so it survives even if the customer edits their profile later
+  address       String
+  city          String
+  paymentMethod PaymentMethod @default(CASH_ON_DELIVERY)
+  createdAt     DateTime      @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  productName String  // snapshot at order time — keeps history stable if product is renamed
+  unitPrice   Int     // snapshot at order time
+  quantity    Int
+
+  @@index([orderId])
+}
+
+model Agent {
+  id        String      @id @default(uuid())
+  name      String
+  email     String?
+  city      String
+  phone     String
+  note      String?     // "tell us about yourself" / business experience
+  status    AgentStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([status])
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  city      String
+  address   String
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  rating      Int
+  note        String?
+  beforeImage String?
+  afterImage  String?
+  createdAt   DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model SiteSettings {
+  id             String   @id @default("singleton")
+  siteName       String
+  supportPhone   String
+  supportEmail   String
+  whatsappNumber String
+  aboutImageUrl  String?  // ← NEW
+  updatedAt      DateTime @default(now()) @updatedAt
+}

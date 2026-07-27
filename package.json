@@ -1,0 +1,13 @@
+{
+  "name": "kuyuyopela",
+  "private": true,
+  "packageManager": "pnpm@11.17.0",
+  "scripts": {
+    "dev:api": "turbo run dev --filter=api",
+    "dev:admin": "turbo run dev --filter=admin",
+    "dev:storefront": "turbo run dev --filter=storefront",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "generate:client": "turbo run generate:client --filter=@kuyuyopela/api-client"
+  }
+}

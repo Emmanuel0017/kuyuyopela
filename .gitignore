@@ -1,0 +1,52 @@
+# --- Dependencies ---
+node_modules/
+.pnpm-store/
+
+# --- Build outputs ---
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# --- Environment variables (never commit secrets) ---
+.env
+.env.local
+.env.*.local
+apps/*/.env
+apps/*/.env.local
+
+# --- Prisma ---
+# Generated client is rebuilt via `pnpm prisma:generate` — don't commit it
+apps/api/node_modules/.prisma/
+apps/api/generated/
+
+# --- Local file storage (dev placeholder uploads) ---
+apps/api/uploads/
+
+# --- Logs ---
+*.log
+npm-debug.log*
+pnpm-debug.log*
+logs/
+
+# --- Editor / IDE ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Vite ---
+apps/*/dist/
+apps/*/.vite/
+
+# --- Testing / coverage ---
+coverage/
+.nyc_output/
+
+# --- Misc ---
+*.tgz
+.cache/
