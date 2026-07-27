@@ -26,5 +26,6 @@
       "express",
       "multer"
     ]
-  }
+  },
+  "exclude": ["node_modules", "dist", "prisma/seed.ts", "test"]
 }

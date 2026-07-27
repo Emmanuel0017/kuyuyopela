@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { STORAGE_SERVICE } from '../storage/storage.interface';
 import { Inject } from '@nestjs/common';
 import type { StorageService } from '../storage/storage.interface';
 import type { MulterFile } from '../common/multer-file.type';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TestimonialsService {

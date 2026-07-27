@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { STORAGE_SERVICE } from '../storage/storage.interface';
 import type { StorageService } from '../storage/storage.interface';
 import { CreateProductDto } from './dto/create-product.dto';
