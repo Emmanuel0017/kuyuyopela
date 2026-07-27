@@ -4,11 +4,11 @@ packages:
 
 allowBuilds:
   '@prisma/client': true
-  '@prisma/engines': set this to true or false
-  '@scarf/scarf': set this to true or false
+  '@prisma/engines': true
+  '@scarf/scarf': true
   esbuild: true
-  prisma: set this to true or false
-  unrs-resolver: set this to true or false
+  prisma: true
+  unrs-resolver: true
 
 onlyBuiltDependencies:
   - "@prisma/engines"
