@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrdersControllerCreate } from '@kuyuyopela/api-client';
+import { CreateOrderDtoPaymentMethod } from '@kuyuyopela/api-client/src/generated/client.schemas';
 import { useCartStore } from '../store/cartStore';
 import { Reveal } from '../components/Reveal';
 
@@ -10,17 +11,26 @@ const DELIVERY = 2000;
 // matches the shape your api-client returns on create — adjust field names if yours differ
 interface CreatedOrder { id: string }
 
+interface CheckoutForm {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  city: string;
+  paymentMethod: CreateOrderDtoPaymentMethod;
+}
+
 export function CheckoutPage() {
   const { items, total, clear } = useCartStore();
   const navigate = useNavigate();
   const { mutate: createOrder, isPending, error } = useOrdersControllerCreate();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<CheckoutForm>({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
     address: '',
     city: '',
-    paymentMethod: 'Cash on Delivery',
+    paymentMethod: CreateOrderDtoPaymentMethod.CASH_ON_DELIVERY,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -67,12 +77,17 @@ export function CheckoutPage() {
             </div>
             <div className="form-group">
               <label>Payment Method</label>
-              <select value={form.paymentMethod} onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}>
-                <option>Cash on Delivery</option>
-                <option>Airtel Money</option>
-                <option>TNM Mpamba</option>
-                <option>Bank Transfer</option>
-                <option>Visa / Mastercard</option>
+              <select
+                value={form.paymentMethod}
+                onChange={(e) =>
+                  setForm({ ...form, paymentMethod: e.target.value as CreateOrderDtoPaymentMethod })
+                }
+              >
+                <option value={CreateOrderDtoPaymentMethod.CASH_ON_DELIVERY}>Cash on Delivery</option>
+                <option value={CreateOrderDtoPaymentMethod.AIRTEL_MONEY}>Airtel Money</option>
+                <option value={CreateOrderDtoPaymentMethod.TNM_MPAMBA}>TNM Mpamba</option>
+                <option value={CreateOrderDtoPaymentMethod.BANK_TRANSFER}>Bank Transfer</option>
+                <option value={CreateOrderDtoPaymentMethod.VISA_MASTERCARD}>Visa / Mastercard</option>
               </select>
             </div>
             {/* ← FIX 2: `error != null` narrows unknown to a safe check */}
