@@ -86,14 +86,16 @@ export function TestimonialsPage() {
     const uploadBoth = (testId: string) => {
       const tasks: Promise<any>[] = [];
       if (beforeFile) {
-        tasks.push(new Promise((resolve) => uploadBefore(
-          { id: testId, data: { file: beforeFile } as any },
+        // TODO: proper upload type — generated hook signature is wrong for file body
+        tasks.push(new Promise((resolve) => (uploadBefore as any)(
+          { id: testId, data: { file: beforeFile } },
           { onSuccess: resolve, onError: resolve },
         )));
       }
       if (afterFile) {
-        tasks.push(new Promise((resolve) => uploadAfter(
-          { id: testId, data: { file: afterFile } as any },
+        // TODO: proper upload type — generated hook signature is wrong for file body
+        tasks.push(new Promise((resolve) => (uploadAfter as any)(
+          { id: testId, data: { file: afterFile } },
           { onSuccess: resolve, onError: resolve },
         )));
       }

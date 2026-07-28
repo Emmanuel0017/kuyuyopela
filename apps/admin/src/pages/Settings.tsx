@@ -59,8 +59,9 @@ export function SettingsPage() {
       {
         onSuccess: () => {
           if (aboutFile) {
-            uploadAbout(
-              { data: { file: aboutFile } as any },
+            // TODO: proper upload type — generated hook signature is wrong (declared void)
+            (uploadAbout as any)(
+              { data: { file: aboutFile } },
               { onSuccess: () => { toast('Settings + about image saved'); clearAbout(); } },
             );
           } else {

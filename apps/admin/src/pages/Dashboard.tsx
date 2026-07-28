@@ -30,6 +30,14 @@ export function DashboardPage() {
 
   if (statsLoading) return <p>Loading dashboard…</p>;
 
+  // Coalesce once so every consumer is guaranteed-defined.
+  const revenue         = stats?.revenue ?? 0;
+  const totalOrders     = stats?.totalOrders ?? 0;
+  const pendingOrders   = stats?.pendingOrders ?? 0;
+  const activeProducts  = stats?.activeProducts ?? 0;
+  const totalCustomers  = stats?.totalCustomers ?? 0;
+  const recentOrders    = stats?.recentOrders ?? [];
+
   return (
     <div>
       <div className="page-title">Dashboard Overview</div>
@@ -38,29 +46,29 @@ export function DashboardPage() {
       <div className="stat-grid">
         <StatCard
           label="Total Revenue"
-          value={fmt(stats?.revenue ?? 0)}
+          value={fmt(revenue)}
           delta="All-time"
           trend="up"
           icon={<DollarSign size={18} />}
         />
         <StatCard
           label="Total Orders"
-          value={stats?.totalOrders ?? 0}
+          value={totalOrders}
           delta="All-time"
           trend="up"
           icon={<ShoppingBag size={18} />}
         />
         <StatCard
           label="Pending Orders"
-          value={stats?.pendingOrders ?? 0}
+          value={pendingOrders}
           delta="Awaiting action"
-          trend={stats?.pendingOrders > 0 ? 'down' : 'up'}
+          trend={pendingOrders > 0 ? 'down' : 'up'}
           icon={<Clock size={18} />}
         />
         <StatCard
           label="Active Products"
-          value={stats?.activeProducts ?? 0}
-          delta={`${stats?.totalCustomers ?? 0} customers total`}
+          value={activeProducts}
+          delta={`${totalCustomers} customers total`}
           trend="up"
           icon={<Package size={18} />}
         />
@@ -113,12 +121,12 @@ export function DashboardPage() {
               <tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th></tr>
             </thead>
             <tbody>
-              {stats?.recentOrders?.length === 0 && (
+              {recentOrders.length === 0 && (
                 <tr>
                   <td colSpan={4} className="text-center text-gray-500 py-6">No orders yet</td>
                 </tr>
               )}
-              {stats?.recentOrders?.map((o: any) => (
+              {recentOrders.map((o: any) => (
                 <tr key={o.id}>
                   <td className="font-mono text-xs">#{o.id.slice(0, 8)}</td>
                   <td>{o.customer.name}</td>

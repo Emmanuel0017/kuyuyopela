@@ -81,8 +81,9 @@ export function ProductsPage() {
 
     const onTextDone = (productId: string) => {
       if (imageFile) {
-        uploadImage(
-          { id: productId, data: { file: imageFile } as any },
+        // TODO: proper upload type — generated hook signature is wrong for file body
+        (uploadImage as any)(
+          { id: productId, data: { file: imageFile } },
           {
             onSuccess: () => { toast('Product saved with image'); close(); refetch(); },
             onError: () => { toast('Saved but image upload failed', 'error'); close(); refetch(); },

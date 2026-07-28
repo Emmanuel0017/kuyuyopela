@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Eye, ChevronRight } from 'lucide-react';
-import { useOrdersControllerFindAll, useOrdersControllerUpdateStatus } from '@kuyuyopela/api-client';
+import {
+  useOrdersControllerFindAll,
+  useOrdersControllerUpdateStatus,
+} from '@kuyuyopela/api-client';
 import { Badge } from '../components/Badge';
 import { Modal } from '../components/Modal';
 import { useToast } from '../store/toastStore';
@@ -37,36 +40,39 @@ export function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {orders?.map((o) => (
-                <tr key={o.id}>
-                  <td className="font-mono text-xs">#{o.id.slice(0, 8)}</td>
-                  <td>{o.customer.name}</td>
-                  <td>{new Date(o.createdAt ?? Date.now()).toLocaleDateString()}</td>
-                  <td>{fmt(o.total)}</td>
-                  <td><Badge status={o.status} /></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-                      <button className="btn btn-ghost btn-sm" onClick={() => setView(o)} title="View">
-                        <Eye size={14} />
-                      </button>
-                      {NEXT_STATUS[o.status]?.slice(0, 1).map((next) => (
-                        <button
-                          key={next}
-                          className="btn btn-ghost btn-sm text-tide"
-                          onClick={() => updateStatus(
-                            { id: o.id, data: { status: next } },
-                            { onSuccess: () => { toast(`Marked ${next}`); refetch(); } },
-                          )}
-                          title={`Mark as ${next}`}
-                        >
-                          <ChevronRight size={14} />
-                          <span className="text-xs">{next}</span>
+              {orders?.map((o) => {
+                const nextOptions = NEXT_STATUS[o.status] ?? [];
+                return (
+                  <tr key={o.id}>
+                    <td className="font-mono text-xs">#{o.id.slice(0, 8)}</td>
+                    <td>{o.customer.name}</td>
+                    <td>{new Date(o.createdAt ?? Date.now()).toLocaleDateString()}</td>
+                    <td>{fmt(o.total)}</td>
+                    <td><Badge status={o.status} /></td>
+                    <td>
+                      <div className="flex items-center gap-1">
+                        <button className="btn btn-ghost btn-sm" onClick={() => setView(o)} title="View">
+                          <Eye size={14} />
                         </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {nextOptions.slice(0, 1).map((next) => (
+                          <button
+                            key={next}
+                            className="btn btn-ghost btn-sm text-tide"
+                            onClick={() => updateStatus(
+                              { id: o.id, data: { status: next as any } },
+                              { onSuccess: () => { toast(`Marked ${next}`); refetch(); } },
+                            )}
+                            title={`Mark as ${next}`}
+                          >
+                            <ChevronRight size={14} />
+                            <span className="text-xs">{next}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
