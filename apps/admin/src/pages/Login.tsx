@@ -37,7 +37,9 @@ export function LoginPage() {
           <label>Password</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
-        {error && <p className="text-sm text-red-600 mb-3">Invalid email or password.</p>}
+        {error != null && (
+  <p className="text-sm text-red-600 mb-3">Invalid email or password.</p>
+)}
         <button type="submit" disabled={isPending} className="btn btn-primary btn-block justify-center">
           <LogIn size={16} />
           {isPending ? 'Signing in…' : 'Log In'}

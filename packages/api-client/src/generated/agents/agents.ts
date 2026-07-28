@@ -41,7 +41,7 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 
 export const agentsControllerFindAll = (
-    params: AgentsControllerFindAllParams,
+    params?: AgentsControllerFindAllParams,
  signal?: AbortSignal
 ) => {
       
@@ -63,7 +63,7 @@ export const getAgentsControllerFindAllQueryKey = (params?: AgentsControllerFind
     }
 
     
-export const getAgentsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(params: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
+export const getAgentsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(params?: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -86,7 +86,7 @@ export type AgentsControllerFindAllQueryError = unknown
 
 
 export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(
- params: AgentsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>> & Pick<
+ params: undefined |  AgentsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof agentsControllerFindAll>>,
           TError,
@@ -96,7 +96,7 @@ export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof age
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(
- params: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>> & Pick<
+ params?: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof agentsControllerFindAll>>,
           TError,
@@ -106,12 +106,12 @@ export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof age
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(
- params: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
+ params?: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 
 export function useAgentsControllerFindAll<TData = Awaited<ReturnType<typeof agentsControllerFindAll>>, TError = unknown>(
- params: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
+ params?: AgentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof agentsControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
 

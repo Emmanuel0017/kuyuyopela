@@ -20,6 +20,12 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  ActivityEntity,
+  DashboardStatsEntity,
+  WeeklySaleEntity
+} from '../client.schemas';
+
 import { customInstance } from '../../axios-instance';
 
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -35,7 +41,7 @@ export const dashboardControllerStats = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<DashboardStatsEntity>(
       {url: `/api/v1/dashboard/stats`, method: 'GET', signal
     },
       );
@@ -121,7 +127,7 @@ export const dashboardControllerWeeklySales = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<WeeklySaleEntity[]>(
       {url: `/api/v1/dashboard/weekly-sales`, method: 'GET', signal
     },
       );
@@ -207,7 +213,7 @@ export const dashboardControllerActivity = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<ActivityEntity[]>(
       {url: `/api/v1/dashboard/activity`, method: 'GET', signal
     },
       );

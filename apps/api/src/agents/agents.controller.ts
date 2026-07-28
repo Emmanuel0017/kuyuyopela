@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AgentStatus } from '@prisma/client';
 import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
@@ -17,6 +17,7 @@ export class AgentsController {
   @Get()
   @ApiBearerAuth()
   @ApiOkResponse({ type: AgentEntity, isArray: true })
+  @ApiQuery({ name: 'status', required: false, enum: AgentStatus })   // ← explicit required: false
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   findAll(@Query('status') status?: AgentStatus) {
@@ -32,7 +33,6 @@ export class AgentsController {
     return this.agentsService.findOne(id);
   }
 
-  // public — storefront "become an agent" application form
   @Post()
   @ApiOkResponse({ type: AgentEntity })
   create(@Body() dto: CreateAgentDto) {

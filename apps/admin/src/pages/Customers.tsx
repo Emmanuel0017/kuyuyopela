@@ -33,7 +33,7 @@ export function CustomersPage() {
                   </td>
                   <td>{c.email}</td>
                   <td>{c.phone ?? '—'}</td>
-                  <td>{c.orders?.length ?? 0}</td>
+                  <td>{c.orderCount ?? 0}</td>
                   <td>{fmt(c.totalSpent ?? 0)}</td>
                 </tr>
               ))}

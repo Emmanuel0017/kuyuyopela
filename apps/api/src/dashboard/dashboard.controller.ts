@@ -4,6 +4,9 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { DashboardStatsEntity } from './entities/dashboard-stats.entity';
+import { WeeklySaleEntity } from './entities/weekly-sale.entity';
+import { ActivityEntity } from './entities/activity.entity';
 
 @ApiTags('dashboard')
 @ApiBearerAuth()
@@ -14,19 +17,19 @@ export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   @Get('stats')
-  @ApiOkResponse({ description: 'Top-line KPI numbers' })
+  @ApiOkResponse({ type: DashboardStatsEntity })
   stats() {
     return this.dashboardService.getStats();
   }
 
   @Get('weekly-sales')
-  @ApiOkResponse({ description: 'Sales totals grouped by day-of-week, last 7 days' })
+  @ApiOkResponse({ type: WeeklySaleEntity, isArray: true })
   weeklySales() {
     return this.dashboardService.getWeeklySales();
   }
 
   @Get('activity')
-  @ApiOkResponse({ description: 'Latest activity across orders, agents, and stock' })
+  @ApiOkResponse({ type: ActivityEntity, isArray: true })
   activity() {
     return this.dashboardService.getRecentActivity();
   }

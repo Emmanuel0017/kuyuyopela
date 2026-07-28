@@ -72,7 +72,7 @@ export function OrdersPage() {
         </div>
       </div>
 
-      <Modal open={!!view} onClose={() => setView(null)} title="Order Details" className="!w-[560px]">
+      <Modal open={!!view} onClose={() => setView(null)} title="Order Details" className="w-140">
         {view && (
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">

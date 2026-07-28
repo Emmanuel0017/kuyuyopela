@@ -103,7 +103,7 @@ const {mutation: mutationOptions} = options ?
 ) => {
       
       
-      return customInstance<OrderEntity>(
+      return customInstance<OrderEntity[]>(
       {url: `/api/v1/orders`, method: 'GET', signal
     },
       );

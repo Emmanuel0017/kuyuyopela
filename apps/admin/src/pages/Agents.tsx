@@ -14,7 +14,7 @@ const NEXT_STATUS: Record<string, string[]> = {
 };
 
 export function AgentsPage() {
-  const { data: agents, isLoading, refetch } = useAgentsControllerFindAll();
+   const { data: agents, isLoading, refetch } = useAgentsControllerFindAll({} as any);  
   const { mutate: setStatus } = useAgentsControllerSetStatus();
   const { mutate: removeAgent } = useAgentsControllerRemove();
   const toast = useToast();

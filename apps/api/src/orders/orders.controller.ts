@@ -9,12 +9,10 @@ import { Roles } from '../auth/roles.decorator';
 import { OrderEntity } from './entities/order.entity';
 
 @ApiTags('orders')
-@ApiOkResponse({ type: OrderEntity })
 @Controller('orders')
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
-  // public — storefront checkout hits this with no auth
   @Post()
   @ApiOkResponse({ type: OrderEntity })
   create(@Body() dto: CreateOrderDto) {
@@ -22,8 +20,8 @@ export class OrdersController {
   }
 
   @Get()
-  @ApiOkResponse({ type: OrderEntity })
   @ApiBearerAuth()
+  @ApiOkResponse({ type: OrderEntity, isArray: true })   // ← was missing isArray
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   findAll() {
@@ -31,8 +29,8 @@ export class OrdersController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: OrderEntity })
   @ApiBearerAuth()
+  @ApiOkResponse({ type: OrderEntity })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   findOne(@Param('id') id: string) {
@@ -40,8 +38,8 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
-  @ApiOkResponse({ type: OrderEntity })
   @ApiBearerAuth()
+  @ApiOkResponse({ type: OrderEntity })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {

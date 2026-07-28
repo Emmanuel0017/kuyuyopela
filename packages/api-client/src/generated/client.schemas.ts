@@ -58,6 +58,33 @@ export interface UpdateProductDto {
   isActive?: boolean;
 }
 
+export interface OrderItemInput {
+  productId: string;
+  quantity: number;
+}
+
+export type CreateOrderDtoPaymentMethod = typeof CreateOrderDtoPaymentMethod[keyof typeof CreateOrderDtoPaymentMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateOrderDtoPaymentMethod = {
+  CASH_ON_DELIVERY: 'CASH_ON_DELIVERY',
+  AIRTEL_MONEY: 'AIRTEL_MONEY',
+  TNM_MPAMBA: 'TNM_MPAMBA',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  VISA_MASTERCARD: 'VISA_MASTERCARD',
+} as const;
+
+export interface CreateOrderDto {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  city: string;
+  paymentMethod?: CreateOrderDtoPaymentMethod;
+  items: OrderItemInput[];
+}
+
 export interface CustomerEntity {
   id: string;
   name: string;
@@ -111,33 +138,6 @@ export interface OrderEntity {
   items: OrderItemEntity[];
   createdAt: string;
   updatedAt: string;
-}
-
-export interface OrderItemInput {
-  productId: string;
-  quantity: number;
-}
-
-export type CreateOrderDtoPaymentMethod = typeof CreateOrderDtoPaymentMethod[keyof typeof CreateOrderDtoPaymentMethod];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateOrderDtoPaymentMethod = {
-  CASH_ON_DELIVERY: 'CASH_ON_DELIVERY',
-  AIRTEL_MONEY: 'AIRTEL_MONEY',
-  TNM_MPAMBA: 'TNM_MPAMBA',
-  BANK_TRANSFER: 'BANK_TRANSFER',
-  VISA_MASTERCARD: 'VISA_MASTERCARD',
-} as const;
-
-export interface CreateOrderDto {
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  address: string;
-  city: string;
-  paymentMethod?: CreateOrderDtoPaymentMethod;
-  items: OrderItemInput[];
 }
 
 export type UpdateOrderStatusDtoStatus = typeof UpdateOrderStatusDtoStatus[keyof typeof UpdateOrderStatusDtoStatus];
@@ -284,11 +284,64 @@ export interface UpdateSettingsDto {
   aboutImageUrl?: string | null;
 }
 
+export type RecentOrderEntityStatus = typeof RecentOrderEntityStatus[keyof typeof RecentOrderEntityStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RecentOrderEntityStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  SHIPPED: 'SHIPPED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type RecentOrderEntityCustomer = {[key: string]: string};
+
+export interface RecentOrderEntity {
+  id: string;
+  total: number;
+  status: RecentOrderEntityStatus;
+  createdAt: string;
+  customer: RecentOrderEntityCustomer;
+}
+
+export interface DashboardStatsEntity {
+  revenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  activeProducts: number;
+  totalCustomers: number;
+  recentOrders: RecentOrderEntity[];
+}
+
+export interface WeeklySaleEntity {
+  label: string;
+  value: number;
+}
+
+export interface ActivityEntity {
+  kind: string;
+  text: string;
+  at: string;
+  timeAgo: string;
+}
+
 export type ProductsControllerFindAllParams = {
 includeInactive?: string;
 };
 
 export type AgentsControllerFindAllParams = {
-status: string;
+status?: AgentsControllerFindAllStatus;
 };
+
+export type AgentsControllerFindAllStatus = typeof AgentsControllerFindAllStatus[keyof typeof AgentsControllerFindAllStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AgentsControllerFindAllStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
 
