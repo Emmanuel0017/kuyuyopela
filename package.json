@@ -9,5 +9,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "generate:client": "turbo run generate:client --filter=@kuyuyopela/api-client"
-  }
+  },
+  "engines": {
+  "node": ">=20 <21"
+}
 }
