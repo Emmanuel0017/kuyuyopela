@@ -1,5 +1,5 @@
 {
   "installCommand": "corepack enable && corepack prepare pnpm@latest --activate && cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter storefront build",
+  "buildCommand": "cd ../.. && pnpm --filter admin build",
   "outputDirectory": "dist"
 }
