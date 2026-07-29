@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStoresControllerFindAll } from '@kuyuyopela/api-client';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Reveal } from '../components/Reveal';
 import { cn } from '../lib/cn';
 
@@ -37,7 +38,8 @@ export function StoresPage() {
               <Reveal variant="zoom" className="map-placeholder">
                 {active === null ? 'Select a location to view on map' : (
                   <div>
-                    📍 <strong>{stores![active].city}</strong>
+                    <FaMapMarkerAlt className="inline-block mr-2 align-middle text-tide" />
+                    <strong>{stores![active].city}</strong>
                     <br />{stores![active].address}
                     <br />{stores![active].phone}
                   </div>

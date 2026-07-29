@@ -6,6 +6,19 @@ import {
   useProductsControllerFindAll,
   useTestimonialsControllerFindAll,
 } from '@kuyuyopela/api-client';
+import {
+  FaCheck,
+  FaShieldAlt,
+  FaFlask,
+  FaFlag,
+  FaTruck,
+  FaMoneyBillWave,
+  FaArrowDown,
+  FaArrowUp,
+  FaHandshake,
+  FaStar,
+  FaRegStar,
+} from 'react-icons/fa';
 import { LiquidDrop } from '../components/LiquidDrop';
 import { Marquee } from '../components/Marquee';
 import { Reveal } from '../components/Reveal';
@@ -63,10 +76,10 @@ export function HomePage() {
               Fights pimples, dark spots, oily skin and body acne. Feel the difference in just one week.
             </p>
             <div className="hero-feats">
-              <div>✅ Clears Pimples</div>
-              <div>✅ Fades Dark Spots</div>
-              <div>✅ Deep Cleansing</div>
-              <div>✅ Brightens Skin</div>
+              <div><FaCheck className="inline-block mr-2 align-middle" />Clears Pimples</div>
+              <div><FaCheck className="inline-block mr-2 align-middle" />Fades Dark Spots</div>
+              <div><FaCheck className="inline-block mr-2 align-middle" />Deep Cleansing</div>
+              <div><FaCheck className="inline-block mr-2 align-middle" />Brightens Skin</div>
             </div>
             <div className="hero-cta-row mt-5">
               <Link to="/shop" className="btn btn-primary glow-btn no-underline">Order Now</Link>
@@ -78,10 +91,10 @@ export function HomePage() {
       </section>
 
       <Reveal className="trust-bar">
-        <div>🛡️ Trusted by 10,000+ Customers</div>
-        <div>🔬 Clinically Inspired Formula</div>
-        <div>🇲🇼 Made in Malawi</div>
-        <div>🚚 Fast &amp; Safe Delivery</div>
+        <div><FaShieldAlt className="inline-block mr-2 align-middle" />Trusted by 10,000+ Customers</div>
+        <div><FaFlask className="inline-block mr-2 align-middle" />Clinically Inspired Formula</div>
+        <div><FaFlag className="inline-block mr-2 align-middle" />Made in Malawi</div>
+        <div><FaTruck className="inline-block mr-2 align-middle" />Fast &amp; Safe Delivery</div>
       </Reveal>
 
       <Marquee />
@@ -109,7 +122,13 @@ export function HomePage() {
                   </div>
                 </div>
                 <div className="ba-info">
-                  <div className="stars">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
+                  <div className="stars flex gap-0.5 text-gold">
+                    {Array.from({ length: 5 }).map((_, i) =>
+                      i < t.rating
+                        ? <FaStar key={i} className="inline-block" />
+                        : <FaRegStar key={i} className="inline-block" />
+                    )}
+                  </div>
                   <div className="font-semibold text-sm">{t.note ?? ''}</div>
                   <div className="text-neutral-500 text-[13px]">— {t.name}, {t.location}</div>
                 </div>
@@ -169,20 +188,20 @@ export function HomePage() {
             <h3 className="text-2xl mb-2.5 font-display">Start Your Own Profitable Business</h3>
             <p className="text-neutral-500 mb-4">Join hundreds of successful One Drop agents nationwide.</p>
             <ul className="list-none p-0 mb-4 text-sm space-y-2">
-              <li>✅ Attractive wholesale prices</li>
-              <li>✅ Marketing materials provided</li>
-              <li>✅ Training &amp; support</li>
-              <li>✅ Fast delivery to your area</li>
+              <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Attractive wholesale prices</li>
+              <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Marketing materials provided</li>
+              <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Training &amp; support</li>
+              <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Fast delivery to your area</li>
             </ul>
             <Link to="/agents" className="btn btn-primary no-underline">Apply Now</Link>
           </Reveal>
           <Reveal variant="right" className="benefit-box">
             <h4 className="font-display">Agent Benefits</h4>
             <ul className="list-none p-0 relative">
-              <li>💰 High Profit Margins</li>
-              <li>📉 Low Investment</li>
-              <li>📈 Big Demand</li>
-              <li>🤝 Nationwide Support</li>
+              <li><FaMoneyBillWave className="inline-block mr-2 align-middle text-tide" />High Profit Margins</li>
+              <li><FaArrowDown className="inline-block mr-2 align-middle text-tide" />Low Investment</li>
+              <li><FaArrowUp className="inline-block mr-2 align-middle text-tide" />Big Demand</li>
+              <li><FaHandshake className="inline-block mr-2 align-middle text-tide" />Nationwide Support</li>
             </ul>
           </Reveal>
         </div>
@@ -203,9 +222,9 @@ export function HomePage() {
                 We are a Malawian skincare manufacturing company committed to providing high quality, effective and affordable skincare solutions for every household.
               </p>
               <ul className="list-none p-0 mb-4 text-sm space-y-2">
-                <li>✅ Quality Ingredients</li>
-                <li>✅ Safe &amp; Effective</li>
-                <li>✅ Affordable Pricing</li>
+                <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Quality Ingredients</li>
+                <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Safe &amp; Effective</li>
+                <li><FaCheck className="inline-block mr-2 align-middle text-tide" />Affordable Pricing</li>
               </ul>
               <Link to="/about" className="btn btn-outline no-underline">Read Our Story</Link>
             </Reveal>

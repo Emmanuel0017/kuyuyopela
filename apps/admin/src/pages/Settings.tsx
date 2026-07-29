@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { Save, Upload, X, Image as ImageIcon } from 'lucide-react';
 import {
   useSettingsControllerGet, useSettingsControllerUpdate,
-  useSettingsControllerUploadAboutImage,
 } from '@kuyuyopela/api-client';
 import { useToast } from '../store/toastStore';
 
@@ -10,10 +9,32 @@ interface Form {
   siteName: string; supportPhone: string; supportEmail: string; whatsappNumber: string;
 }
 
+// ─── manual multipart upload — generated hooks can't build real FormData for file bodies ───
+async function uploadAboutImage(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = localStorage.getItem('accessToken');
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/settings/about-image`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+      // no Content-Type header — the browser sets the correct multipart boundary itself
+    },
+  );
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message ?? `Upload failed (${res.status})`);
+  }
+  return res.json();
+}
+
 export function SettingsPage() {
   const { data: settings, isLoading } = useSettingsControllerGet();
   const { mutate: updateSettings, isPending } = useSettingsControllerUpdate();
-  const { mutate: uploadAbout, isPending: uploading } = useSettingsControllerUploadAboutImage();
   const toast = useToast();
 
   const [form, setForm] = useState<Form>({
@@ -21,6 +42,7 @@ export function SettingsPage() {
   });
   const [aboutPreview, setAboutPreview] = useState<string | null>(null);
   const [aboutFile, setAboutFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const aboutInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => () => { if (aboutPreview) URL.revokeObjectURL(aboutPreview); }, [aboutPreview]);
@@ -57,13 +79,18 @@ export function SettingsPage() {
     updateSettings(
       { data: form },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           if (aboutFile) {
-            // TODO: proper upload type — generated hook signature is wrong (declared void)
-            (uploadAbout as any)(
-              { data: { file: aboutFile } },
-              { onSuccess: () => { toast('Settings + about image saved'); clearAbout(); } },
-            );
+            setUploading(true);
+            try {
+              await uploadAboutImage(aboutFile);
+              toast('Settings + about image saved');
+              clearAbout();
+            } catch (err: any) {
+              toast(err.message ?? 'Settings saved, but image upload failed', 'error');
+            } finally {
+              setUploading(false);
+            }
           } else {
             toast('Settings saved');
           }

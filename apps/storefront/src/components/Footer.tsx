@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSettingsControllerGet } from '@kuyuyopela/api-client';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 export function Footer() {
   const { data: settings } = useSettingsControllerGet();
@@ -31,9 +32,9 @@ export function Footer() {
           <div>
             <h4>Contact</h4>
             <ul className="list-none p-0 text-[13px] opacity-90">
-              <li>📞 {supportPhone}</li>
-              <li>✉️ {supportEmail}</li>
-              <li>📍 {siteName}</li>
+              <li className="flex items-center"><FaPhone className="inline-block mr-2 align-middle" />{supportPhone}</li>
+              <li className="flex items-center"><FaEnvelope className="inline-block mr-2 align-middle" />{supportEmail}</li>
+              <li className="flex items-center"><FaMapMarkerAlt className="inline-block mr-2 align-middle" />{siteName}</li>
             </ul>
           </div>
           <div>
@@ -42,7 +43,7 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          © 2026 {siteName}. All Rights Reserved. Made with ❤️ in Malawi.
+          © 2026 {siteName}. All Rights Reserved. secured by devintern.
         </div>
       </div>
     </footer>

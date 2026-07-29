@@ -1,4 +1,5 @@
 import { useTestimonialsControllerFindAll } from '@kuyuyopela/api-client';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 import { Reveal } from '../components/Reveal';
 
 export function ResultsPage() {
@@ -39,7 +40,13 @@ export function ResultsPage() {
                   </div>
                 </div>
                 <div className="ba-info">
-                  <div className="stars">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
+                  <div className="stars flex gap-0.5 text-gold">
+                    {Array.from({ length: 5 }).map((_, i) =>
+                      i < t.rating
+                        ? <FaStar key={i} className="inline-block" />
+                        : <FaRegStar key={i} className="inline-block" />
+                    )}
+                  </div>
                   <div className="font-semibold text-sm">{t.note ?? ''}</div>
                   <div className="text-neutral-500 text-[13px]">— {t.name}, {t.location}</div>
                 </div>
@@ -60,7 +67,13 @@ export function ResultsPage() {
             )}
             {more.map((t) => (
               <div className="bg-white p-5 rounded-xl shadow-sm" key={t.id}>
-                <div className="stars">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
+                <div className="stars flex gap-0.5 text-gold">
+                  {Array.from({ length: 5 }).map((_, i) =>
+                    i < t.rating
+                      ? <FaStar key={i} className="inline-block" />
+                      : <FaRegStar key={i} className="inline-block" />
+                  )}
+                </div>
                 <p className="my-2.5 text-neutral-500 text-sm">"{t.note ?? ''}"</p>
                 <div className="font-semibold text-[13px]">{t.name}, {t.location}</div>
               </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useProductsControllerFindOne } from '@kuyuyopela/api-client';
+import { FaCheck, FaArrowLeft } from 'react-icons/fa';
 import { useCartStore } from '../store/cartStore';
 import { Reveal } from '../components/Reveal';
 
@@ -20,7 +21,7 @@ export function ProductPage() {
     <div>
       <section className="section">
         <div className="container mx-auto max-w-300 px-5">
-          <Link to="/shop" className="btn btn-outline btn-sm inline-block mb-5 no-underline">← Back to Shop</Link>
+          <Link to="/shop" className="btn btn-outline btn-sm inline-block mb-5 no-underline"><FaArrowLeft className="inline-block mr-1 align-middle" />Back to Shop</Link>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Reveal variant="left" className="img-reveal in">
 {product.imageUrl
@@ -46,7 +47,7 @@ export function ProductPage() {
                     setTimeout(() => setAdded(false), 1500);
                   }}
                 >
-                  {product.stock === 0 ? 'Out of stock' : added ? 'Added ✓' : 'Add to Cart'}
+                  {product.stock === 0 ? 'Out of stock' : added ? <><FaCheck className="inline-block mr-1 align-middle" />Added</> : 'Add to Cart'}
                 </button>
                 <a href="https://wa.me/265999666670" target="_blank" rel="noreferrer" className="btn btn-outline no-underline">Ask on WhatsApp</a>
               </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAgentsControllerCreate } from '@kuyuyopela/api-client';
+import { FaMoneyBillWave, FaArrowDown, FaArrowUp, FaGraduationCap, FaTruck, FaPalette, FaCheck } from 'react-icons/fa';
 import { Reveal } from '../components/Reveal';
 
 export function AgentsPage() {
@@ -34,12 +35,12 @@ export function AgentsPage() {
           <Reveal variant="left" className="benefit-box">
             <h4 className="font-display">Why Become an Agent?</h4>
             <ul className="list-none p-0 relative">
-              <li>💰 High Profit Margins</li>
-              <li>📉 Low Investment Required</li>
-              <li>📈 Big Nationwide Demand</li>
-              <li>🎓 Free Training &amp; Support</li>
-              <li>🚚 Fast Delivery to Your Area</li>
-              <li>🎨 Marketing Materials Provided</li>
+              <li><FaMoneyBillWave className="inline-block mr-2 align-middle text-tide" />High Profit Margins</li>
+              <li><FaArrowDown className="inline-block mr-2 align-middle text-tide" />Low Investment Required</li>
+              <li><FaArrowUp className="inline-block mr-2 align-middle text-tide" />Big Nationwide Demand</li>
+              <li><FaGraduationCap className="inline-block mr-2 align-middle text-tide" />Free Training &amp; Support</li>
+              <li><FaTruck className="inline-block mr-2 align-middle text-tide" />Fast Delivery to Your Area</li>
+              <li><FaPalette className="inline-block mr-2 align-middle text-tide" />Marketing Materials Provided</li>
             </ul>
           </Reveal>
           <Reveal variant="right" className="bg-white p-5 rounded-xl shadow-sm">
@@ -91,7 +92,7 @@ export function AgentsPage() {
               </div>
               {error != null && <p className="text-sm text-red-600">Something went wrong — try again.</p>}
               <button type="submit" disabled={isPending} className="btn btn-primary btn-block border-0">
-                {isPending ? 'Sending…' : done ? 'Application Sent ✓' : 'Submit Application'}
+                {isPending ? 'Sending…' : done ? <><FaCheck className="inline-block mr-1 align-middle" />Application Sent</> : 'Submit Application'}
               </button>
             </form>
           </Reveal>
