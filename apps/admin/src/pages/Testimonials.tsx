@@ -3,7 +3,6 @@ import { Plus, Edit, Trash2, Upload, X, ImageIcon } from 'lucide-react';
 import {
   useTestimonialsControllerFindAll, useTestimonialsControllerCreate,
   useTestimonialsControllerUpdate, useTestimonialsControllerRemove,
-  useTestimonialsControllerUploadBeforeImage, useTestimonialsControllerUploadAfterImage,
 } from '@kuyuyopela/api-client';
 import { Modal } from '../components/Modal';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -21,19 +20,40 @@ interface TestForm {
 
 const EMPTY: TestForm = { name: '', location: '', rating: 5, note: '' };
 
+// ─── manual multipart upload — generated hooks can't build real FormData for file bodies ───
+async function uploadTestimonialImage(testId: string, file: File, kind: 'before' | 'after') {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = localStorage.getItem('accessToken');
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/testimonials/${testId}/${kind}-image`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+      // no Content-Type header — the browser sets the correct multipart boundary itself
+    },
+  );
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message ?? `Upload failed (${res.status})`);
+  }
+  return res.json();
+}
+
 export function TestimonialsPage() {
   const { data: testimonials, isLoading, refetch } = useTestimonialsControllerFindAll();
   const { mutate: createTest } = useTestimonialsControllerCreate();
   const { mutate: updateTest } = useTestimonialsControllerUpdate();
   const { mutate: removeTest } = useTestimonialsControllerRemove();
-  const { mutate: uploadBefore } = useTestimonialsControllerUploadBeforeImage();
-  const { mutate: uploadAfter } = useTestimonialsControllerUploadAfterImage();
   const toast = useToast();
 
   const [modal, setModal] = useState<{ open: boolean; form: TestForm }>({ open: false, form: EMPTY });
   const [del, setDel] = useState<{ open: boolean; id?: string }>({ open: false });
+  const [saving, setSaving] = useState(false);
 
-  // file state — kept separately so the form payload stays clean (no File objects in form state)
   const [beforeFile, setBeforeFile] = useState<File | null>(null);
   const [afterFile, setAfterFile] = useState<File | null>(null);
   const [beforePreview, setBeforePreview] = useState<string | null>(null);
@@ -77,43 +97,32 @@ export function TestimonialsPage() {
     setPreview(URL.createObjectURL(file));
   }
 
-  function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     const { existingBefore, existingAfter, ...payload } = modal.form;
     const data = payload as any;
     delete data.id;
 
-    const uploadBoth = (testId: string) => {
-      const tasks: Promise<any>[] = [];
-      if (beforeFile) {
-        // TODO: proper upload type — generated hook signature is wrong for file body
-        tasks.push(new Promise((resolve) => (uploadBefore as any)(
-          { id: testId, data: { file: beforeFile } },
-          { onSuccess: resolve, onError: resolve },
-        )));
-      }
-      if (afterFile) {
-        // TODO: proper upload type — generated hook signature is wrong for file body
-        tasks.push(new Promise((resolve) => (uploadAfter as any)(
-          { id: testId, data: { file: afterFile } },
-          { onSuccess: resolve, onError: resolve },
-        )));
-      }
-      if (tasks.length === 0) {
-        toast(modal.form.id ? 'Testimonial updated' : 'Testimonial added');
-        close(); refetch();
-      } else {
-        Promise.all(tasks).then(() => {
-          toast('Saved with image(s)');
-          close(); refetch();
-        });
-      }
-    };
+    setSaving(true);
+    try {
+      const testId = modal.form.id
+        ? await new Promise<string>((resolve, reject) =>
+            updateTest({ id: modal.form.id!, data }, { onSuccess: () => resolve(modal.form.id!), onError: reject }),
+          )
+        : await new Promise<string>((resolve, reject) =>
+            createTest({ data }, { onSuccess: (created: any) => resolve(created.id), onError: reject }),
+          );
 
-    if (modal.form.id) {
-      updateTest({ id: modal.form.id, data }, { onSuccess: () => uploadBoth(modal.form.id!) });
-    } else {
-      createTest({ data }, { onSuccess: (created: any) => uploadBoth(created.id) });
+      if (beforeFile) await uploadTestimonialImage(testId, beforeFile, 'before');
+      if (afterFile) await uploadTestimonialImage(testId, afterFile, 'after');
+
+      toast(modal.form.id ? 'Testimonial updated' : 'Testimonial added');
+      close();
+      refetch();
+    } catch (err: any) {
+      toast(err.message ?? 'Something went wrong saving the testimonial', 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -193,7 +202,6 @@ export function TestimonialsPage() {
             <input value={modal.form.note} onChange={(e) => setModal({ ...modal, form: { ...modal.form, note: e.target.value } })} placeholder="After 2 bottles" />
           </div>
 
-          {/* BEFORE IMAGE */}
           <ImageUpload
             label="Before Image"
             previewSrc={beforeSrc}
@@ -203,7 +211,6 @@ export function TestimonialsPage() {
             inputId="beforeImageInput"
           />
 
-          {/* AFTER IMAGE */}
           <ImageUpload
             label="After Image"
             previewSrc={afterSrc}
@@ -214,10 +221,10 @@ export function TestimonialsPage() {
           />
 
           <div className="modal-actions">
-            <button type="submit" className="btn btn-primary">
-              {modal.form.id ? 'Save Changes' : 'Add Testimonial'}
+            <button type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Saving…' : modal.form.id ? 'Save Changes' : 'Add Testimonial'}
             </button>
-            <button type="button" className="btn btn-outline" onClick={close}>Cancel</button>
+            <button type="button" className="btn btn-outline" onClick={close} disabled={saving}>Cancel</button>
           </div>
         </form>
       </Modal>
@@ -235,7 +242,6 @@ export function TestimonialsPage() {
   );
 }
 
-// ─── shared subcomponent for image upload row ───
 function ImageUpload({
   label, previewSrc, inputRef, inputId, onChange, onClear,
 }: {

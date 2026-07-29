@@ -3,7 +3,6 @@ import { Plus, Edit, Trash2, Upload, X, Image as ImageIcon } from 'lucide-react'
 import {
   useProductsControllerFindAll, useProductsControllerCreate,
   useProductsControllerUpdate, useProductsControllerRemove,
-  useProductsControllerUploadImage,
 } from '@kuyuyopela/api-client';
 import { Modal } from '../components/Modal';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -25,18 +24,41 @@ const EMPTY: ProductForm = {
 
 const fmt = (n: number) => `MK ${n.toLocaleString()}`;
 
+// ─── manual multipart upload — generated hooks can't build real FormData for file bodies ───
+async function uploadProductImage(productId: string, file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = localStorage.getItem('accessToken');
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/products/${productId}/image`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+      // no Content-Type header — the browser sets the correct multipart boundary itself
+    },
+  );
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message ?? `Upload failed (${res.status})`);
+  }
+  return res.json();
+}
+
 export function ProductsPage() {
   const { data: products, isLoading, refetch } = useProductsControllerFindAll();
   const { mutate: createProduct, isPending: creating } = useProductsControllerCreate();
   const { mutate: updateProduct, isPending: updating } = useProductsControllerUpdate();
   const { mutate: removeProduct } = useProductsControllerRemove();
-  const { mutate: uploadImage } = useProductsControllerUploadImage();
   const toast = useToast();
 
   const [modal, setModal] = useState<{ open: boolean; form: ProductForm }>({ open: false, form: EMPTY });
   const [del, setDel] = useState<{ open: boolean; id?: string }>({ open: false });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
@@ -73,32 +95,35 @@ export function ProductsPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     const { existingImageUrl, ...payload } = modal.form;
     const data = payload as any;
     delete data.id;
 
-    const onTextDone = (productId: string) => {
+    setSaving(true);
+    try {
+      const productId = modal.form.id
+        ? await new Promise<string>((resolve, reject) =>
+            updateProduct({ id: modal.form.id!, data }, { onSuccess: () => resolve(modal.form.id!), onError: reject }),
+          )
+        : await new Promise<string>((resolve, reject) =>
+            createProduct({ data }, { onSuccess: (created: any) => resolve(created.id), onError: reject }),
+          );
+
       if (imageFile) {
-        // TODO: proper upload type — generated hook signature is wrong for file body
-        (uploadImage as any)(
-          { id: productId, data: { file: imageFile } },
-          {
-            onSuccess: () => { toast('Product saved with image'); close(); refetch(); },
-            onError: () => { toast('Saved but image upload failed', 'error'); close(); refetch(); },
-          },
-        );
+        await uploadProductImage(productId, imageFile);
+        toast(modal.form.id ? 'Product updated with image' : 'Product created with image');
       } else {
         toast(modal.form.id ? 'Product updated' : 'Product created');
-        close(); refetch();
       }
-    };
 
-    if (modal.form.id) {
-      updateProduct({ id: modal.form.id, data }, { onSuccess: () => onTextDone(modal.form.id!) });
-    } else {
-      createProduct({ data }, { onSuccess: (created: any) => onTextDone(created.id) });
+      close();
+      refetch();
+    } catch (err: any) {
+      toast(err.message ?? 'Something went wrong saving the product', 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -215,10 +240,10 @@ export function ProductsPage() {
             <textarea rows={3} value={modal.form.description} onChange={(e) => setModal({ ...modal, form: { ...modal.form, description: e.target.value } })} />
           </div>
           <div className="modal-actions">
-            <button type="submit" disabled={creating || updating} className="btn btn-primary">
-              {modal.form.id ? 'Save Changes' : 'Add Product'}
+            <button type="submit" disabled={creating || updating || saving} className="btn btn-primary">
+              {saving ? 'Saving…' : modal.form.id ? 'Save Changes' : 'Add Product'}
             </button>
-            <button type="button" className="btn btn-outline" onClick={close}>Cancel</button>
+            <button type="button" className="btn btn-outline" onClick={close} disabled={saving}>Cancel</button>
           </div>
         </form>
       </Modal>
