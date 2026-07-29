@@ -7,4 +7,4 @@ export * from './generated/stores/stores';
 export * from './generated/testimonials/testimonials';
 export * from './generated/settings/settings';
 export * from './generated/dashboard/dashboard';  // ← was missing
-export * from './generated/health/health';        // ← was missing
+export * from './generated/health/health';        // ← was missingexport * from './generated/client.schemas';

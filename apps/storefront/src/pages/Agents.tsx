@@ -1,8 +1,25 @@
 import { useState } from 'react';
+import { useAgentsControllerCreate } from '@kuyuyopela/api-client';
 import { Reveal } from '../components/Reveal';
 
 export function AgentsPage() {
   const [done, setDone] = useState(false);
+  const { mutate: createAgent, isPending, error } = useAgentsControllerCreate();
+  const [form, setForm] = useState({ name: '', phone: '', email: '', city: '', note: '' });
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    createAgent(
+      { data: form },
+      {
+        onSuccess: () => {
+          setDone(true);
+          setForm({ name: '', phone: '', email: '', city: '', note: '' });
+          setTimeout(() => setDone(false), 3000);
+        },
+      },
+    );
+  }
 
   return (
     <div>
@@ -27,24 +44,54 @@ export function AgentsPage() {
           </Reveal>
           <Reveal variant="right" className="bg-white p-5 rounded-xl shadow-sm">
             <h3 className="mb-4 font-display text-xl">Agent Application Form</h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setDone(true);
-                setTimeout(() => setDone(false), 3000);
-                (e.target as HTMLFormElement).reset();
-              }}
-            >
-              <div className="form-group"><label>Full Name</label><input required type="text" /></div>
-              <div className="form-group"><label>Phone Number</label><input required type="tel" /></div>
-              <div className="form-group"><label>Email Address</label><input required type="email" /></div>
-              <div className="form-group"><label>City / District</label><input required type="text" /></div>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Full Name</label>
+                <input
+                  required
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Phone Number</label>
+                <input
+                  required
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Email Address</label>
+                <input
+                  required
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>City / District</label>
+                <input
+                  required
+                  type="text"
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                />
+              </div>
               <div className="form-group">
                 <label>Tell us about yourself</label>
-                <textarea placeholder="Business experience, capital available, etc." />
+                <textarea
+                  placeholder="Business experience, capital available, etc."
+                  value={form.note}
+                  onChange={(e) => setForm({ ...form, note: e.target.value })}
+                />
               </div>
-              <button type="submit" className="btn btn-primary btn-block border-0">
-                {done ? 'Application Sent ✓' : 'Submit Application'}
+              {error != null && <p className="text-sm text-red-600">Something went wrong — try again.</p>}
+              <button type="submit" disabled={isPending} className="btn btn-primary btn-block border-0">
+                {isPending ? 'Sending…' : done ? 'Application Sent ✓' : 'Submit Application'}
               </button>
             </form>
           </Reveal>
